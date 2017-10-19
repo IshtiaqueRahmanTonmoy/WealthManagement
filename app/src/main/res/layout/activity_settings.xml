@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:id="@+id/relativeLayout1" android:layout_height="fill_parent">
+    <TableLayout android:id="@+id/TableLayout01" android:stretchColumns="*"
+        android:layout_height="wrap_content" android:layout_width="fill_parent"
+        android:layout_centerInParent="true" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/category"
+            android:textSize="30sp"
+            android:layout_below="@+id/price"
+            android:layout_centerHorizontal="true" />
+
+        <TableRow android:id="@+id/TableRow01" android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <Button android:id="@+id/addBtn" android:layout_margin="5dp" android:layout_weight="1"
+                android:layout_height="fill_parent" android:layout_width="fill_parent"
+                android:text="Add" android:textColor="#EDFF99"
+                android:textStyle="bold" android:background="@color/colorPrimary" />
+            <Button android:id="@+id/editBtn" android:layout_weight="1"
+                android:layout_margin="5dp" android:layout_height="wrap_content"
+                android:layout_width="fill_parent" android:text="Edit"
+                android:textColor="#EDFF99" android:textStyle="bold"
+                android:background="@color/colorPrimary" />
+        </TableRow>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:text="@string/paymentmethod"
+            android:textSize="30sp"
+            android:layout_below="@+id/price"
+            android:layout_centerHorizontal="true" />
+
+        <TableRow android:id="@+id/TableRow02" android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <Button android:id="@+id/addBtns" android:layout_weight="1"
+                android:layout_margin="5dp" android:layout_height="wrap_content"
+                android:layout_width="fill_parent" android:text="Add"
+                android:textColor="#EDFF99" android:textStyle="bold"
+                android:background="@color/colorPrimary" />
+            <Button android:id="@+id/editBtns" android:layout_margin="5dp" android:layout_weight="1"
+                android:layout_height="wrap_content" android:layout_width="fill_parent"
+                android:text="Edit" android:textColor="#EDFF99" android:textStyle="bold"
+                android:background="@color/colorPrimary" />
+        </TableRow>
+    </TableLayout>
+</RelativeLayout>

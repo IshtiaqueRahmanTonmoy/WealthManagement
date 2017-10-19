@@ -1,0 +1,92 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scrollbars="vertical">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_margin="20dp"
+            android:orientation="vertical">
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/buttonfirst"
+                android:text="All"
+                android:drawableLeft="@drawable/all"
+                android:textColor="#fff"
+                android:gravity="left|center_vertical"
+                android:paddingLeft="15dip"
+                android:paddingRight="15dp"
+                android:textSize="20sp" />
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:paddingLeft="15dip"
+                android:gravity="left|center_vertical"
+                android:drawableLeft="@drawable/date"
+                android:paddingRight="15dp"
+                android:background="@color/buttonsecond"
+                android:text="Date"
+                android:textColor="#fff"
+                android:textSize="20sp" />
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="left|center_vertical"
+                android:paddingRight="15dp"
+                android:paddingLeft="15dip"
+                android:drawableLeft="@drawable/month"
+                android:layout_marginTop="20dp"
+                android:background="@color/buttonthird"
+                android:text="Month"
+                android:textColor="#fff"
+                android:textSize="20sp" />
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingLeft="15dip"
+                android:layout_marginTop="20dp"
+                android:gravity="left|center_vertical"
+                android:paddingRight="15dp"
+                android:background="@color/buttonfourth"
+                android:drawableLeft="@drawable/category"
+                android:text="Category"
+                android:textColor="#fff"
+                android:textSize="20sp" />
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:background="@color/buttonfifth"
+                android:text="Mode"
+                android:paddingLeft="15dip"
+                android:gravity="left|center_vertical"
+                android:drawableLeft="@drawable/mode"
+                android:paddingRight="15dp"
+                android:textColor="#fff"
+                android:textSize="20sp" />
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

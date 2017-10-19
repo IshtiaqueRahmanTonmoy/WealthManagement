@@ -4,30 +4,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import wealthmanagement.com.wealthmanagement.adapter.CustomAdapter;
 
-public class TransactionsActivity extends AppCompatActivity {
-
+public class ReminderActivity extends AppCompatActivity {
 
     String[] countryNames={"Entertainment","Food","Medical","Cloathes","Gift","Auto","Travelling","Stationary"};
     int flags[] = {R.drawable.entertainment, R.drawable.food, R.drawable.medical, R.drawable.cloath, R.drawable.gift, R.drawable.auto, R.drawable.travelling, R.drawable.stationar};
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_transactions);
-        //Getting the instance of Spinner and applying OnItemSelectedListener on it
+        setContentView(R.layout.activity_reminder);
+
         Spinner spin = (Spinner) findViewById(R.id.categorySpinner);
 
         CustomAdapter customAdapter=new CustomAdapter(getApplicationContext(),flags,countryNames);
         spin.setAdapter(customAdapter);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
