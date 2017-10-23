@@ -14,5 +14,9 @@
     <color name="buttonthird">#069b1a</color>
     <color name="buttonfourth">#46a33f</color>
     <color name="buttonfifth">#d66464</color>
+    <color name="ColorShade">#d7dcdc</color>
+    <color name="textColorPrimary">#FFFFFF</color>
+    <color name="black">#0e0e0e</color>
 
+    <color name="ColorPrimaryDark">#d47d20</color>
 </resources>

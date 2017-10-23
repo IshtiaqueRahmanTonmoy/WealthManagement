@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <LinearLayout android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="@drawable/edit_text_design"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:id="@+id/firstname"
+                android:maxLength="50"
+                android:hint="@string/firstname"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="45dip"
+                android:paddingTop="15dp"
+                android:textSize="18sp"
+                android:layout_weight="1"/>
+            <EditText
+                android:id="@+id/lastname"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="@drawable/edit_text_design"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLength="50"
+                android:hint="@string/lastname"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="45dip"
+                android:paddingTop="15dp"
+                android:textSize="18sp"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:id="@+id/emailEdt"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="@drawable/edit_text_design"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLength="50"
+            android:hint="@string/email"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dip"
+            android:paddingTop="15dp"
+            android:textSize="18sp"
+            android:layout_weight="1"/>
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="@drawable/edit_text_design"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:maxLength="50"
+            android:id="@+id/password"
+            android:hint="@string/password"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dip"
+            android:paddingTop="15dp"
+            android:textSize="18sp"
+            android:layout_weight="1"/>
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="@drawable/edit_text_design"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:maxLength="50"
+            android:id="@+id/confirmpassword"
+            android:hint="@string/confirmpassword"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="45dip"
+            android:paddingTop="15dp"
+            android:textSize="18sp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/submitBtn"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="4dp"
+                android:layout_weight="1"
+                android:background="@color/ColorPrimary"
+                android:tag="facebook_login_button"
+                android:textColor="@color/textColorPrimary"
+                android:text="@string/signup" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
