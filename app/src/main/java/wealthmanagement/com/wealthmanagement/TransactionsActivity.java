@@ -1,10 +1,12 @@
 package wealthmanagement.com.wealthmanagement;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -46,7 +49,7 @@ import wealthmanagement.com.wealthmanagement.adapter.CustomAdapter;
 
 public class TransactionsActivity extends AppCompatActivity {
 
-    String user_id = "1";
+    public static final String GETINFO_URL = "http://192.168.0.111/wealthmanagement/getvalueinfo.php";
     public static final String INCOME_URL = "http://192.168.0.111/wealthmanagement/income.php";
     public static final String INSERTBALANCE_URL = "http://192.168.0.111/wealthmanagement/insertintobalance.php";
     public static final String CHECK_URL = "http://192.168.0.111/wealthmanagement/checkifnull.php";
@@ -64,9 +67,9 @@ public class TransactionsActivity extends AppCompatActivity {
 
     EditText priceEdt,dateEdt,timeEdt,descriptionEdt;
     Button incomeBtn,expenseBtn,imageBtn,saveBtn,resetBtn;
-
+    TextView balanceresult;
     ImageView imageview;
-    String formattedDate,currentTime,date,time,description,category,payment_method,image,resultcheck,balance;
+    String user_id,formattedDate,currentTime,date,time,description,category,payment_method,image,resultcheck,balance,email;
     double price;
     private Uri filePath;
     private Bitmap bitmap;
@@ -88,11 +91,46 @@ public class TransactionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transactions);
         //Getting the instance of Spinner and applying OnItemSelectedListener on it
+
+        incomeBtn = (Button) findViewById(R.id.incomeButton);
+        expenseBtn = (Button) findViewById(R.id.expenseButton);
+        imageBtn = (Button) findViewById(R.id.next_image);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String name = preferences.getString("incomestate", "");
+        if(!name.equalsIgnoreCase(""))
+        {
+            if(name.equals("1")){
+                isIncomeSelected = true;
+                isExpenseSelected = false;
+                incomeBtn.setBackgroundColor(getResources().getColor(R.color.ColorPrimary));
+
+                expenseBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        isIncomeSelected = false;
+                        isExpenseSelected = true;
+
+                        incomeBtn.setBackgroundColor(getResources().getColor(R.color.ColorPrimary));
+                        expenseBtn.setBackgroundColor(getResources().getColor(R.color.ColorPrimaryDark));
+                    }
+                });
+
+            }
+        }
+
+
         categorySpinner = (Spinner) findViewById(R.id.categorySpinner);
         paymentSpinner = (Spinner) findViewById(R.id.paymentSpinner);
+        balanceresult = (TextView) findViewById(R.id.balance);
 
+        Intent intent = getIntent();
+        email = intent.getStringExtra("email");
+
+        getuserinfo(email);
         getvalueifnull();
-        getcurrentbalancewithid(user_id);
+        //getcurrentbalancewithid(user_id);
+
 
         Calendar c = Calendar.getInstance();
         final SimpleDateFormat datevalue = new SimpleDateFormat("dd-MMM-yyyy");
@@ -114,10 +152,6 @@ public class TransactionsActivity extends AppCompatActivity {
 
         imageview = (ImageView) findViewById(R.id.image_view);
 
-        incomeBtn = (Button) findViewById(R.id.incomeButton);
-        expenseBtn = (Button) findViewById(R.id.expenseButton);
-        imageBtn = (Button) findViewById(R.id.next_image);
-
         imageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,12 +168,20 @@ public class TransactionsActivity extends AppCompatActivity {
         incomeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isIncomeSelected) {
-                    isIncomeSelected = true;
-                    isExpenseSelected = false;
-                    incomeBtn.setBackgroundColor(getResources().getColor(R.color.ColorPrimaryDark));
-                    expenseBtn.setBackgroundColor(getResources().getColor(R.color.ColorPrimary));
-                }
+                isIncomeSelected = true;
+                isExpenseSelected = false;
+
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(TransactionsActivity.this);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("incomestate","1");
+                editor.apply();
+
+                Log.d("bol", String.valueOf(isExpenseSelected)+""+ String.valueOf(isIncomeSelected));
+                incomeBtn.setBackgroundColor(getResources().getColor(R.color.ColorPrimaryDark));
+                expenseBtn.setBackgroundColor(getResources().getColor(R.color.ColorPrimary));
+
+
+
             }
         });
 
@@ -149,6 +191,8 @@ public class TransactionsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 isIncomeSelected = false;
                 isExpenseSelected = true;
+
+                Log.d("boole", String.valueOf(isExpenseSelected)+""+ String.valueOf(isIncomeSelected));
                 incomeBtn.setBackgroundColor(getResources().getColor(R.color.ColorPrimary));
                 expenseBtn.setBackgroundColor(getResources().getColor(R.color.ColorPrimaryDark));
             }
@@ -197,6 +241,7 @@ public class TransactionsActivity extends AppCompatActivity {
                        setvalueIntoBalancewithPlus();
                     }
                 }
+
                 if(isIncomeSelected == false && isExpenseSelected == true){
                     if(resultcheck.equals("[]")) {
                         setvalueIntoBalance();
@@ -204,10 +249,44 @@ public class TransactionsActivity extends AppCompatActivity {
                     else{
                         setvalueIntoBalancewithMinus();
                     }
-
                 }
             }
         });
+    }
+
+
+
+    private void getuserinfo(String email) {
+        Uri.Builder builder = Uri.parse(GETINFO_URL).buildUpon();
+        builder.appendQueryParameter("email", email);
+        String loginUrl=builder.build().toString();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, loginUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            JSONArray jsonarray = jsonObject.getJSONArray("result");
+                            getInfo(jsonarray);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d("response",response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //You can handle error here if you want
+                    }
+                }){
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(TransactionsActivity.this);
+        requestQueue.add(stringRequest);
+
     }
 
 
@@ -239,6 +318,21 @@ public class TransactionsActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+
+    private void getInfo(JSONArray j) {
+        for(int i=0;i<j.length();i++){
+            try {
+                //Getting json object
+                JSONObject json = j.getJSONObject(i);
+                user_id = json.getString("id");
+                getcurrentbalancewithid(user_id);
+                //Toast.makeText(TransactionsActivity.this, "user_id"+user_id, Toast.LENGTH_SHORT).show();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private void getcurrentbalancewithid(String user_id) {
         Uri.Builder builder = Uri.parse(POST_URL).buildUpon();
@@ -278,6 +372,7 @@ public class TransactionsActivity extends AppCompatActivity {
                 //Getting json object
                 JSONObject json = j.getJSONObject(i);
                 balance = json.getString("balance");
+                balanceresult.setText(balance);
                 Log.d("balance",balance);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -298,6 +393,8 @@ public class TransactionsActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.d("response", response);
+                        Toast.makeText(TransactionsActivity.this, "inserted successfully..", Toast.LENGTH_SHORT).show();
+                        balanceresult.setText(""+totbalance);
                         // Display the response string.
                         //_response.setText(response);
                     }
@@ -322,13 +419,14 @@ public class TransactionsActivity extends AppCompatActivity {
 
     private void setvalueIntoBalancewithMinus() {
 
-        Double balancevalue = Double.parseDouble(balance);
+        //Toast.makeText(TransactionsActivity.this, ""+balance, Toast.LENGTH_SHORT).show();
+        Double balancevalue = Double.parseDouble(balanceresult.getText().toString());
 
         Log.d("balancevalue", String.valueOf(balancevalue));
         Log.d("price", String.valueOf(price));
 
         final double totbalance = balancevalue - price;
-        Toast.makeText(TransactionsActivity.this, ""+totbalance, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(TransactionsActivity.this, ""+totbalance, Toast.LENGTH_SHORT).show();
 
         RequestQueue queues = Volley.newRequestQueue(TransactionsActivity.this);
 
@@ -337,6 +435,8 @@ public class TransactionsActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.d("response", response);
+                        Toast.makeText(TransactionsActivity.this, "updated successfully..", Toast.LENGTH_SHORT).show();
+                        balanceresult.setText(""+totbalance);
                         // Display the response string.
                         //_response.setText(response);
                     }

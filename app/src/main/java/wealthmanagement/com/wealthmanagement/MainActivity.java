@@ -9,10 +9,13 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
 
     Button transactionBtn,historyBtn,settingsBtn,reminderBtn;
-
+    String email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        email = intent.getStringExtra("email");
 
         setContentView(R.layout.activity_main);
         transactionBtn = (Button) findViewById(R.id.transactions);
@@ -24,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,TransactionsActivity.class);
+                intent.putExtra("email",email);
                 startActivity(intent);
             }
         });

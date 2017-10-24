@@ -57,8 +57,14 @@ public class SigninActivity extends AppCompatActivity {
                             @Override
                             public void onResponse(String response) {
                                 Log.d("Response",response);
-                                Intent intent = new Intent(SigninActivity.this,MainActivity.class);
-                                startActivity(intent);
+                                if(response.equals("Connected successfully<br>{\"success\":0,\"message\":\"Oops! An error occurred.\"}")){
+                                    Toast.makeText(SigninActivity.this, "Please enter correct information..", Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    Intent intent = new Intent(SigninActivity.this,MainActivity.class);
+                                    intent.putExtra("email",email);
+                                    startActivity(intent);
+                                }
                             }
                         }, new Response.ErrorListener() {
                     @Override
