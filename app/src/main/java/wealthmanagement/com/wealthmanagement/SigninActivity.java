@@ -30,7 +30,7 @@ public class SigninActivity extends AppCompatActivity {
     EditText emailEdt,passwordEdt;
     Button signIn;
     String email,password;
-    public static final String url = "http://180.149.15.140/wealthmanagement/login.php";
+    public static final String url = "http://192.168.0.111/wealthmanagement/login.php";
     private static final String TAG_SUCCESS = "success";
 
     @Override

@@ -25,8 +25,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -41,7 +46,13 @@ import wealthmanagement.com.wealthmanagement.adapter.CustomAdapter;
 
 public class TransactionsActivity extends AppCompatActivity {
 
-    public static final String INCOME_URL = "http://180.149.15.140/wealthmanagement/income.php";
+    String user_id = "1";
+    public static final String INCOME_URL = "http://192.168.0.111/wealthmanagement/income.php";
+    public static final String INSERTBALANCE_URL = "http://192.168.0.111/wealthmanagement/insertintobalance.php";
+    public static final String CHECK_URL = "http://192.168.0.111/wealthmanagement/checkifnull.php";
+    public static final String POST_URL = "http://192.168.0.111/wealthmanagement/getvalue.php";
+    public static final String UPDATEBALANCE_URL = "http://192.168.0.111/wealthmanagement/updatebalance.php";
+
     Spinner categorySpinner,paymentSpinner;
     String[] countryNames={"Entertainment","Food","Medical","Cloathes","Gift","Auto","Travelling","Stationary"};
     int flags[] = {R.drawable.entertainment, R.drawable.food, R.drawable.medical, R.drawable.cloath, R.drawable.gift, R.drawable.auto, R.drawable.travelling, R.drawable.stationar};
@@ -55,13 +66,14 @@ public class TransactionsActivity extends AppCompatActivity {
     Button incomeBtn,expenseBtn,imageBtn,saveBtn,resetBtn;
 
     ImageView imageview;
-    String formattedDate,currentTime, user_id,date,time,description,category,payment_method,image;
-
+    String formattedDate,currentTime,date,time,description,category,payment_method,image,resultcheck,balance;
+    double price;
     private Uri filePath;
     private Bitmap bitmap;
     private int PICK_IMAGE_REQUEST = 1;
 
     public static final String KEY_USERID = "user_id";
+    public static final String KEY_BALANCE = "balance";
     public static final String KEY_DATE = "date";
     public static final String KEY_TIME = "time";
     public static final String KEY_DESCRIPTION = "description";
@@ -69,6 +81,7 @@ public class TransactionsActivity extends AppCompatActivity {
     public static final String KEY_PAYMENTMETHOD = "payment_method";
     public static final String KEY_IMAGE = "image";
 
+    private JSONArray jsonarray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +90,9 @@ public class TransactionsActivity extends AppCompatActivity {
         //Getting the instance of Spinner and applying OnItemSelectedListener on it
         categorySpinner = (Spinner) findViewById(R.id.categorySpinner);
         paymentSpinner = (Spinner) findViewById(R.id.paymentSpinner);
+
+        getvalueifnull();
+        getcurrentbalancewithid(user_id);
 
         Calendar c = Calendar.getInstance();
         final SimpleDateFormat datevalue = new SimpleDateFormat("dd-MMM-yyyy");
@@ -163,7 +179,8 @@ public class TransactionsActivity extends AppCompatActivity {
                 DateFormat timevalue = new SimpleDateFormat("hh:mm a");
                 currentTime = timevalue.format(c.getTime());
 
-                user_id = "1";
+                //user_id = "1";
+                price = Double.parseDouble(priceEdt.getText().toString());
                 date = dateEdt.getText().toString();
                 time = timeEdt.getText().toString();
                 description = descriptionEdt.getText().toString();
@@ -171,54 +188,253 @@ public class TransactionsActivity extends AppCompatActivity {
                 payment_method="cash";
                 image="image/image.png";
 
-                if(isIncomeSelected == true){
+                if(isIncomeSelected == true && isExpenseSelected == false){
 
-                    RequestQueue queue = Volley.newRequestQueue(TransactionsActivity.this);
-                    StringRequest stringRequest = new StringRequest(Request.Method.POST, INCOME_URL,
-                            new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String response) {
-
-                                    Log.d("response",response);
-                                    Toast.makeText(TransactionsActivity.this,"Successfully inserted..",Toast.LENGTH_LONG).show();
-
-                                }
-                            },
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    Log.d("response",error.toString());
-                                    //Toast.makeText(SignupActivity.this,error.toString(),Toast.LENGTH_LONG).show();
-                                }
-                            }){
-                        @Override
-                        protected Map<String,String> getParams() throws AuthFailureError {
-                            Map<String,String> params = new HashMap<String, String>();
-
-                            params.put(KEY_USERID,user_id);
-                            params.put(KEY_DATE,formattedDate);
-                            params.put(KEY_TIME,currentTime);
-                            params.put(KEY_DESCRIPTION, description);
-                            params.put(KEY_CATEGORY, category);
-                            params.put(KEY_PAYMENTMETHOD, payment_method);
-                            params.put(KEY_IMAGE, image);
-
-                            return params;
-
-                        }
-
-                    };
-
-                    queue.add(stringRequest);
-
-
+                    if(resultcheck.equals("[]")) {
+                        setvalueIntoBalance();
+                    }
+                    else{
+                       setvalueIntoBalancewithPlus();
+                    }
                 }
-                if(isExpenseSelected == true){
+                if(isIncomeSelected == false && isExpenseSelected == true){
+                    if(resultcheck.equals("[]")) {
+                        setvalueIntoBalance();
+                    }
+                    else{
+                        setvalueIntoBalancewithMinus();
+                    }
 
                 }
             }
         });
     }
+
+
+    private void getvalueifnull() {
+        StringRequest stringRequest = new StringRequest(CHECK_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            resultcheck = jsonObject.getString("result");
+                            Log.d("object", resultcheck);
+                        }
+
+                        catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(TransactionsActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
+        RequestQueue requestQueue = Volley.newRequestQueue(TransactionsActivity.this);
+        requestQueue.add(stringRequest);
+    }
+
+
+    private void getcurrentbalancewithid(String user_id) {
+        Uri.Builder builder = Uri.parse(POST_URL).buildUpon();
+        builder.appendQueryParameter("user_id", user_id);
+        String loginUrl=builder.build().toString();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, loginUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            JSONArray jsonarray = jsonObject.getJSONArray("result");
+                            getValue(jsonarray);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d("response",response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //You can handle error here if you want
+                    }
+                }){
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(TransactionsActivity.this);
+        requestQueue.add(stringRequest);
+    }
+
+    private void getValue(JSONArray j) {
+        for(int i=0;i<j.length();i++){
+            try {
+                //Getting json object
+                JSONObject json = j.getJSONObject(i);
+                balance = json.getString("balance");
+                Log.d("balance",balance);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private void setvalueIntoBalancewithPlus() {
+
+        Double balancevalue = Double.parseDouble(balance);
+        final double totbalance = price + balancevalue;
+
+        RequestQueue queues = Volley.newRequestQueue(TransactionsActivity.this);
+
+        StringRequest stringRequests = new StringRequest(Request.Method.POST, UPDATEBALANCE_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("response", response);
+                        // Display the response string.
+                        //_response.setText(response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //_response.setText("That didn't work!");
+            }
+        }) {
+            //adding parameters to the request
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("balance", String.valueOf(totbalance));
+                params.put("user_id", user_id);
+                return params;
+            }
+        };
+        // Add the request to the RequestQueue.
+        queues.add(stringRequests);
+    }
+
+    private void setvalueIntoBalancewithMinus() {
+
+        Double balancevalue = Double.parseDouble(balance);
+
+        Log.d("balancevalue", String.valueOf(balancevalue));
+        Log.d("price", String.valueOf(price));
+
+        final double totbalance = balancevalue - price;
+        Toast.makeText(TransactionsActivity.this, ""+totbalance, Toast.LENGTH_SHORT).show();
+
+        RequestQueue queues = Volley.newRequestQueue(TransactionsActivity.this);
+
+        StringRequest stringRequests = new StringRequest(Request.Method.POST, UPDATEBALANCE_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("response", response);
+                        // Display the response string.
+                        //_response.setText(response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //_response.setText("That didn't work!");
+            }
+        }) {
+            //adding parameters to the request
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("balance", String.valueOf(totbalance));
+                params.put("user_id", user_id);
+                return params;
+            }
+        };
+        // Add the request to the RequestQueue.
+        queues.add(stringRequests);
+    }
+
+    private void setvalueIntoIncome() {
+        RequestQueue queue = Volley.newRequestQueue(TransactionsActivity.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, INCOME_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Log.d("response",response);
+                        Toast.makeText(TransactionsActivity.this,"Successfully inserted..",Toast.LENGTH_LONG).show();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("response",error.toString());
+                        //Toast.makeText(SignupActivity.this,error.toString(),Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String,String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+
+                params.put(KEY_USERID,user_id);
+                params.put(KEY_DATE,formattedDate);
+                params.put(KEY_TIME,currentTime);
+                params.put(KEY_DESCRIPTION, description);
+                params.put(KEY_CATEGORY, category);
+                params.put(KEY_PAYMENTMETHOD, payment_method);
+                params.put(KEY_IMAGE, image);
+
+                return params;
+
+            }
+
+        };
+
+        queue.add(stringRequest);
+    }
+
+
+    private void setvalueIntoBalance() {
+
+        RequestQueue queue = Volley.newRequestQueue(TransactionsActivity.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, INSERTBALANCE_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Log.d("response",response);
+                        Toast.makeText(TransactionsActivity.this,"Successfully inserted..",Toast.LENGTH_LONG).show();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("response",error.toString());
+                        //Toast.makeText(SignupActivity.this,error.toString(),Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String,String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+
+                params.put(KEY_USERID,user_id);
+                params.put(KEY_BALANCE, String.valueOf(price));
+
+                return params;
+            }
+
+        };
+
+        queue.add(stringRequest);
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
