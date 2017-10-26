@@ -49,12 +49,13 @@ import wealthmanagement.com.wealthmanagement.adapter.CustomAdapter;
 
 public class TransactionsActivity extends AppCompatActivity {
 
-    public static final String GETINFO_URL = "http://192.168.0.111/wealthmanagement/getvalueinfo.php";
-    public static final String INCOME_URL = "http://192.168.0.111/wealthmanagement/income.php";
-    public static final String INSERTBALANCE_URL = "http://192.168.0.111/wealthmanagement/insertintobalance.php";
-    public static final String CHECK_URL = "http://192.168.0.111/wealthmanagement/checkifnull.php";
-    public static final String POST_URL = "http://192.168.0.111/wealthmanagement/getvalue.php";
-    public static final String UPDATEBALANCE_URL = "http://192.168.0.111/wealthmanagement/updatebalance.php";
+    public static final String GETINFO_URL = "http://192.168.0.115/wealthmanagement/getvalueinfo.php";
+    public static final String INCOME_URL = "http://192.168.0.115/wealthmanagement/income.php";
+    public static final String EXPENSE_URL = "http://192.168.0.115/wealthmanagement/expense.php";
+    public static final String INSERTBALANCE_URL = "http://192.168.0.115/wealthmanagement/insertintobalance.php";
+    public static final String CHECK_URL = "http://192.168.0.115/wealthmanagement/checkifnull.php";
+    public static final String POST_URL = "http://192.168.0.115/wealthmanagement/getvalue.php";
+    public static final String UPDATEBALANCE_URL = "http://192.168.0.115/wealthmanagement/updatebalance.php";
 
     Spinner categorySpinner,paymentSpinner;
     String[] countryNames={"Entertainment","Food","Medical","Cloathes","Gift","Auto","Travelling","Stationary"};
@@ -76,6 +77,7 @@ public class TransactionsActivity extends AppCompatActivity {
     private int PICK_IMAGE_REQUEST = 1;
 
     public static final String KEY_USERID = "user_id";
+    public static final String KEY_PRICE = "price";
     public static final String KEY_BALANCE = "balance";
     public static final String KEY_DATE = "date";
     public static final String KEY_TIME = "time";
@@ -120,8 +122,11 @@ public class TransactionsActivity extends AppCompatActivity {
         }
 
 
+
         categorySpinner = (Spinner) findViewById(R.id.categorySpinner);
         paymentSpinner = (Spinner) findViewById(R.id.paymentSpinner);
+
+
         balanceresult = (TextView) findViewById(R.id.balance);
 
         Intent intent = getIntent();
@@ -201,12 +206,38 @@ public class TransactionsActivity extends AppCompatActivity {
 
         CustomAdapter customAdapter=new CustomAdapter(getApplicationContext(),flags,countryNames);
         categorySpinner.setAdapter(customAdapter);
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View v, int i, long l) {
+                category = ((TextView) v.findViewById(R.id.textView)).getText().toString();
+                //Toast.makeText(TransactionsActivity.this, ""+text1, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
 
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.values_array, android.R.layout.simple_spinner_item);
         //Specify the layout to use when the list of choices appear
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         paymentSpinner.setAdapter(adapter);
+
+        paymentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                payment_method = paymentSpinner.getSelectedItem().toString();
+                //Toast.makeText(TransactionsActivity.this, ""+text2, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
 
 
@@ -228,13 +259,12 @@ public class TransactionsActivity extends AppCompatActivity {
                 date = dateEdt.getText().toString();
                 time = timeEdt.getText().toString();
                 description = descriptionEdt.getText().toString();
-                category="entertainment";
-                payment_method="cash";
                 image="image/image.png";
 
                 if(isIncomeSelected == true && isExpenseSelected == false){
 
                     if(resultcheck.equals("[]")) {
+                        setvalueIntoIncome();
                         setvalueIntoBalance();
                     }
                     else{
@@ -244,6 +274,7 @@ public class TransactionsActivity extends AppCompatActivity {
 
                 if(isIncomeSelected == false && isExpenseSelected == true){
                     if(resultcheck.equals("[]")) {
+                        setvalueIntoExpense();
                         setvalueIntoBalance();
                     }
                     else{
@@ -253,7 +284,6 @@ public class TransactionsActivity extends AppCompatActivity {
             }
         });
     }
-
 
 
     private void getuserinfo(String email) {
@@ -383,6 +413,7 @@ public class TransactionsActivity extends AppCompatActivity {
 
     private void setvalueIntoBalancewithPlus() {
 
+        setvalueIntoIncomeagain();
         Double balancevalue = Double.parseDouble(balance);
         final double totbalance = price + balancevalue;
 
@@ -417,7 +448,45 @@ public class TransactionsActivity extends AppCompatActivity {
         queues.add(stringRequests);
     }
 
+    private void setvalueIntoIncomeagain() {
+        RequestQueue queue = Volley.newRequestQueue(TransactionsActivity.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, INCOME_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("response",error.toString());
+                        //Toast.makeText(SignupActivity.this,error.toString(),Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String,String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+
+                params.put(KEY_USERID,user_id);
+                params.put(KEY_PRICE, String.valueOf(price));
+                params.put(KEY_DATE,formattedDate);
+                params.put(KEY_TIME,currentTime);
+                params.put(KEY_DESCRIPTION, description);
+                params.put(KEY_CATEGORY, category);
+                params.put(KEY_PAYMENTMETHOD, payment_method);
+                params.put(KEY_IMAGE, image);
+
+                return params;
+
+            }
+
+        };
+
+        queue.add(stringRequest);
+    }
+
     private void setvalueIntoBalancewithMinus() {
+        setvalueIntoExpenseagain();
 
         //Toast.makeText(TransactionsActivity.this, ""+balance, Toast.LENGTH_SHORT).show();
         Double balancevalue = Double.parseDouble(balanceresult.getText().toString());
@@ -459,7 +528,46 @@ public class TransactionsActivity extends AppCompatActivity {
         queues.add(stringRequests);
     }
 
+    private void setvalueIntoExpenseagain() {
+        RequestQueue queue = Volley.newRequestQueue(TransactionsActivity.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, EXPENSE_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //Toast.makeText(TransactionsActivity.this,"Successfully inserted..",Toast.LENGTH_LONG).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("response",error.toString());
+                        //Toast.makeText(SignupActivity.this,error.toString(),Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String,String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+
+                params.put(KEY_USERID,user_id);
+                params.put(KEY_PRICE, String.valueOf(price));
+                params.put(KEY_DATE,formattedDate);
+                params.put(KEY_TIME,currentTime);
+                params.put(KEY_DESCRIPTION, description);
+                params.put(KEY_CATEGORY, category);
+                params.put(KEY_PAYMENTMETHOD, payment_method);
+                params.put(KEY_IMAGE, image);
+
+                return params;
+
+            }
+
+        };
+
+        queue.add(stringRequest);
+    }
+
     private void setvalueIntoIncome() {
+
         RequestQueue queue = Volley.newRequestQueue(TransactionsActivity.this);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, INCOME_URL,
                 new Response.Listener<String>() {
@@ -467,7 +575,52 @@ public class TransactionsActivity extends AppCompatActivity {
                     public void onResponse(String response) {
 
                         Log.d("response",response);
+                        balanceresult.setText(""+price);
                         Toast.makeText(TransactionsActivity.this,"Successfully inserted..",Toast.LENGTH_LONG).show();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("response",error.toString());
+
+                        //Toast.makeText(SignupActivity.this,error.toString(),Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String,String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+
+                params.put(KEY_USERID,user_id);
+                params.put(KEY_PRICE, String.valueOf(price));
+                params.put(KEY_DATE,formattedDate);
+                params.put(KEY_TIME,currentTime);
+                params.put(KEY_DESCRIPTION, description);
+                params.put(KEY_CATEGORY, category);
+                params.put(KEY_PAYMENTMETHOD, payment_method);
+                params.put(KEY_IMAGE, image);
+
+                return params;
+
+            }
+
+        };
+
+        queue.add(stringRequest);
+    }
+
+    private void setvalueIntoExpense() {
+        RequestQueue queue = Volley.newRequestQueue(TransactionsActivity.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, EXPENSE_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        double res = price - 2*price;
+                        Log.d("response",response);
+                        balanceresult.setText(""+res);
+                        //Toast.makeText(TransactionsActivity.this,"Successfully inserted..",Toast.LENGTH_LONG).show();
 
                     }
                 },
@@ -483,6 +636,7 @@ public class TransactionsActivity extends AppCompatActivity {
                 Map<String,String> params = new HashMap<String, String>();
 
                 params.put(KEY_USERID,user_id);
+                params.put(KEY_PRICE, String.valueOf(price));
                 params.put(KEY_DATE,formattedDate);
                 params.put(KEY_TIME,currentTime);
                 params.put(KEY_DESCRIPTION, description);
@@ -500,6 +654,7 @@ public class TransactionsActivity extends AppCompatActivity {
     }
 
 
+
     private void setvalueIntoBalance() {
 
         RequestQueue queue = Volley.newRequestQueue(TransactionsActivity.this);
@@ -507,7 +662,7 @@ public class TransactionsActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
+                        balanceresult.setText(""+price);
                         Log.d("response",response);
                         Toast.makeText(TransactionsActivity.this,"Successfully inserted..",Toast.LENGTH_LONG).show();
 

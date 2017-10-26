@@ -33,7 +33,7 @@ import wealthmanagement.com.wealthmanagement.adapter.JSONParser;
 
 public class SignupActivity extends AppCompatActivity {
 
-    public static final String REGISTER_URL = "http://192.168.0.111/wealthmanagement/insert.php";
+    public static final String REGISTER_URL = "http://192.168.0.115/wealthmanagement/insert.php";
     EditText firstnameEdt,lastnameEdt,emailEdt,passwordEdt;
     Button submitBtn;
     public static final String KEY_FIRSTNAME = "first_name";
