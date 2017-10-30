@@ -25,4 +25,8 @@
     <string name="signin">Sign In</string>
     <string name="signup">Sign UP</string>
     <string name="forgot">Forget password?</string>
+
+    <string name="ct">Category</string>
+    <string name="dt">Date</string>
+    <string name="pr">Price</string>
 </resources>

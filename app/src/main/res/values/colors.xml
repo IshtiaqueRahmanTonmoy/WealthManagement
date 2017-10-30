@@ -19,4 +19,5 @@
     <color name="black">#0e0e0e</color>
 
     <color name="ColorPrimaryDark">#d47d20</color>
+    <color name="colorCell">#da611b</color>
 </resources>
