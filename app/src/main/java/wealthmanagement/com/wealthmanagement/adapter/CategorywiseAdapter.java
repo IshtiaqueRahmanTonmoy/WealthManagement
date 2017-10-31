@@ -12,27 +12,28 @@ import wealthmanagement.com.wealthmanagement.R;
 import wealthmanagement.com.wealthmanagment.Transaction;
 
 /**
- * Created by TONMOYPC on 10/30/2017.
+ * Created by TONMOYPC on 10/31/2017.
  */
-public class TransactionAdapter  extends RecyclerView.Adapter<TransactionAdapter.MyViewHolder>{
+public class CategorywiseAdapter extends RecyclerView.Adapter<CategorywiseAdapter.MyViewHolder>{
 
     private List<Transaction> transactionList;
 
-    public TransactionAdapter(List<Transaction> transactionList){
+    public CategorywiseAdapter(List<Transaction> transactionList){
         this.transactionList = transactionList;
     }
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-       View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_user_item,parent,false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.categorywisesearch_row,parent,false);
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Transaction transaction = transactionList.get(position);
-        holder.category.setText(transaction.getCategory());
+        holder.headercategory.setText(transaction.getCategory());
         holder.date.setText(transaction.getDate());
         holder.price.setText(transaction.getPrice());
+        holder.description.setText(transaction.getDescription());
     }
 
     @Override
@@ -41,13 +42,14 @@ public class TransactionAdapter  extends RecyclerView.Adapter<TransactionAdapter
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView category, date, price;
+        public TextView category, date, price,description,headercategory;
 
         public MyViewHolder(View view) {
             super(view);
-            category = (TextView) view.findViewById(R.id.categoryTxt);
-            date = (TextView) view.findViewById(R.id.dateTxt);
-            price = (TextView) view.findViewById(R.id.priceTxt);
+            headercategory = (TextView) view.findViewById(R.id.categoryTxt);
+            date = (TextView) view.findViewById(R.id.date);
+            price = (TextView) view.findViewById(R.id.price);
+            description = (TextView) view.findViewById(R.id.description);
         }
     }
 

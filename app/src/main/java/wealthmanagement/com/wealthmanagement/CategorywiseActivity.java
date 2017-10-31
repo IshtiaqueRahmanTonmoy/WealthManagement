@@ -23,15 +23,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import wealthmanagement.com.wealthmanagement.adapter.TransactionAdapter;
+import wealthmanagement.com.wealthmanagement.adapter.CategorywiseAdapter;
+import wealthmanagement.com.wealthmanagement.adapter.DatewiseAdapter;
 import wealthmanagement.com.wealthmanagment.Transaction;
 
-public class AllTransactionsActivity extends AppCompatActivity {
+public class CategorywiseActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private TransactionAdapter mAdapter;
+    private CategorywiseAdapter mAdapter;
     private StringRequest stringRequest;
-    private String category,date,price;
+    private String category,date,price,description;
     private List<Transaction> transactionList = new ArrayList<Transaction>();
     private Button incomeButton,expenseButton;
     boolean isIncomeSelected;
@@ -40,13 +41,14 @@ public class AllTransactionsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_all_transactions);
+        setContentView(R.layout.activity_datewisesearch);
+
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         incomeButton = (Button) findViewById(R.id.incomeButton);
         expenseButton = (Button) findViewById(R.id.expenseButton);
 
-        mAdapter = new TransactionAdapter(transactionList);
+        mAdapter = new CategorywiseAdapter(transactionList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -58,7 +60,7 @@ public class AllTransactionsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //Toast.makeText(AllTransactionsActivity.this, "income button selected", Toast.LENGTH_SHORT).show();
                 transactionList.clear();
-                mAdapter = new TransactionAdapter(transactionList);
+                mAdapter = new CategorywiseAdapter(transactionList);
                 recyclerView.setAdapter(mAdapter);
                 if (!isIncomeSelected) {
                     prepareDataforincome();
@@ -75,7 +77,7 @@ public class AllTransactionsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 transactionList.clear();
-                mAdapter = new TransactionAdapter(transactionList);
+                mAdapter = new CategorywiseAdapter(transactionList);
                 recyclerView.setAdapter(mAdapter);
                 prepareDataforexpense();
                 //Toast.makeText(AllTransactionsActivity.this, "expense button selected", Toast.LENGTH_SHORT).show();
@@ -85,9 +87,8 @@ public class AllTransactionsActivity extends AppCompatActivity {
                 expenseButton.setBackgroundColor(getResources().getColor(R.color.ColorPrimaryDark));
             }
         });
-
-
     }
+
 
     private void prepareDataforincome() {
         stringRequest = new StringRequest("http://192.168.0.115/wealthmanagement/getransactionbyid.php?user_id="+6,
@@ -104,8 +105,9 @@ public class AllTransactionsActivity extends AppCompatActivity {
                                     category = json.getString("category");
                                     date = json.getString("date");
                                     price = json.getString("price");
+                                    description = json.getString("description");
 
-                                    transactionList.add(new Transaction(category,date,price));
+                                    transactionList.add(new Transaction(category,date,price,description));
                                     mAdapter.notifyDataSetChanged();
                                     //Toast.makeText(AllTransactionsActivity.this, "category"+category, Toast.LENGTH_SHORT).show();
 
@@ -123,12 +125,12 @@ public class AllTransactionsActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(AllTransactionsActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(CategorywiseActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
                     }
                 });
 
 
-        RequestQueue requestQueue = Volley.newRequestQueue(AllTransactionsActivity.this);
+        RequestQueue requestQueue = Volley.newRequestQueue(CategorywiseActivity.this);
         requestQueue.add(stringRequest);
     }
 
@@ -147,8 +149,9 @@ public class AllTransactionsActivity extends AppCompatActivity {
                                     category = json.getString("category");
                                     date = json.getString("date");
                                     price = json.getString("price");
+                                    description = json.getString("description");
 
-                                    transactionList.add(new Transaction(category,date,price));
+                                    transactionList.add(new Transaction(category,date,price,description));
                                     mAdapter.notifyDataSetChanged();
                                     //Toast.makeText(AllTransactionsActivity.this, "category"+category, Toast.LENGTH_SHORT).show();
 
@@ -166,12 +169,12 @@ public class AllTransactionsActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(AllTransactionsActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(CategorywiseActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
                     }
                 });
 
 
-        RequestQueue requestQueue = Volley.newRequestQueue(AllTransactionsActivity.this);
+        RequestQueue requestQueue = Volley.newRequestQueue(CategorywiseActivity.this);
         requestQueue.add(stringRequest);
     }
 }

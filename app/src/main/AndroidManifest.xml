@@ -27,7 +27,11 @@
         <activity android:name=".HistoryActivity" />
         <activity android:name=".SignupActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".AllTransactionsActivity"></activity>
+        <activity android:name=".AllTransactionsActivity" />
+        <activity android:name=".DatewisesearchActivity" />
+        <activity android:name=".CategorywiseActivity" />
+        <activity android:name=".ModewiseActivity" />
+        <activity android:name=".MonthwiseActivity"></activity>
     </application>
 
 </manifest>
