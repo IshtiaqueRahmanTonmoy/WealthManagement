@@ -17,6 +17,7 @@ public class ReminderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminder);
 
+        ReminderActivity.this.setTitle("iAccounts");
         Spinner spin = (Spinner) findViewById(R.id.categorySpinner);
 
         CustomAdapter customAdapter=new CustomAdapter(getApplicationContext(),flags,countryNames);

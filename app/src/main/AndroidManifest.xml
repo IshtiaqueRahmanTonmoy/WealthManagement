@@ -21,7 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TransactionsActivity" />
+        <activity android:name=".TransactionsActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize"
+            />
         <activity android:name=".ReminderActivity" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".HistoryActivity" />

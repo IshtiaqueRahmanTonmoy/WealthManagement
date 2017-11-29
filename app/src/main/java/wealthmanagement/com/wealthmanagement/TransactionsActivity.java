@@ -1,11 +1,15 @@
 package wealthmanagement.com.wealthmanagement;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -13,12 +17,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,13 +57,13 @@ import wealthmanagement.com.wealthmanagement.adapter.CustomAdapter;
 
 public class TransactionsActivity extends AppCompatActivity {
 
-    public static final String GETINFO_URL = "http://192.168.0.115/wealthmanagement/getvalueinfo.php";
-    public static final String INCOME_URL = "http://192.168.0.115/wealthmanagement/income.php";
-    public static final String EXPENSE_URL = "http://192.168.0.115/wealthmanagement/expense.php";
-    public static final String INSERTBALANCE_URL = "http://192.168.0.115/wealthmanagement/insertintobalance.php";
-    public static final String CHECK_URL = "http://192.168.0.115/wealthmanagement/checkifnull.php";
-    public static final String POST_URL = "http://192.168.0.115/wealthmanagement/getvalue.php";
-    public static final String UPDATEBALANCE_URL = "http://192.168.0.115/wealthmanagement/updatebalance.php";
+    public static final String GETINFO_URL = "http://ingtechbd.com/demo/wealthmanagement/getvalueinfo.php";
+    public static final String INCOME_URL = "http://ingtechbd.com/demo/wealthmanagement/income.php";
+    public static final String EXPENSE_URL = "http://ingtechbd.com/demo/wealthmanagement/expense.php";
+    public static final String INSERTBALANCE_URL = "http://ingtechbd.com/demo/wealthmanagement/insertintobalance.php";
+    public static final String CHECK_URL = "http://ingtechbd.com/demo/wealthmanagement/checkifnull.php";
+    public static final String POST_URL = "http://ingtechbd.com/demo/wealthmanagement/getvalue.php";
+    public static final String UPDATEBALANCE_URL = "http://ingtechbd.com/demo/wealthmanagement/updatebalance.php";
 
     Spinner categorySpinner,paymentSpinner;
     String[] countryNames={"Entertainment","Food","Medical","Cloathes","Gift","Auto","Travelling","Stationary"};
@@ -69,6 +77,7 @@ public class TransactionsActivity extends AppCompatActivity {
     EditText priceEdt,dateEdt,timeEdt,descriptionEdt;
     Button incomeBtn,expenseBtn,imageBtn,saveBtn,resetBtn;
     TextView balanceresult;
+    ScrollView scrollview;
     ImageView imageview;
     String user_id,formattedDate,currentTime,date,time,description,category,payment_method,image,resultcheck,balance,email;
     double price;
@@ -87,7 +96,9 @@ public class TransactionsActivity extends AppCompatActivity {
     public static final String KEY_IMAGE = "image";
 
     private JSONArray jsonarray;
+    private Context context;
 
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +108,15 @@ public class TransactionsActivity extends AppCompatActivity {
         incomeBtn = (Button) findViewById(R.id.incomeButton);
         expenseBtn = (Button) findViewById(R.id.expenseButton);
         imageBtn = (Button) findViewById(R.id.next_image);
+
+        scrollview = (ScrollView) findViewById(R.id.scrollview);
+        scrollview.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                hideKeyboard(view);
+                return false;
+            }
+        });
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String name = preferences.getString("incomestate", "");
@@ -146,14 +166,46 @@ public class TransactionsActivity extends AppCompatActivity {
 
 
         priceEdt = (EditText) findViewById(R.id.priceEdt);
+        priceEdt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
 
         dateEdt = (EditText) findViewById(R.id.dateEdt);
         dateEdt.setText(formattedDate);
+        dateEdt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
 
         timeEdt = (EditText) findViewById(R.id.timeEdt);
         timeEdt.setText(currentTime);
+        timeEdt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
 
         descriptionEdt = (EditText) findViewById(R.id.descriptionsEdt);
+        descriptionEdt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
 
         imageview = (ImageView) findViewById(R.id.image_view);
 
@@ -283,6 +335,11 @@ public class TransactionsActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
 

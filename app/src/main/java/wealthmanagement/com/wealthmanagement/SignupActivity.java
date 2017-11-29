@@ -1,5 +1,6 @@
 package wealthmanagement.com.wealthmanagement;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -33,7 +35,7 @@ import wealthmanagement.com.wealthmanagement.adapter.JSONParser;
 
 public class SignupActivity extends AppCompatActivity {
 
-    public static final String REGISTER_URL = "http://192.168.0.115/wealthmanagement/insert.php";
+    public static final String REGISTER_URL = "http://ingtechbd.com/demo/wealthmanagement/insert.php";
     EditText firstnameEdt,lastnameEdt,emailEdt,passwordEdt;
     Button submitBtn;
     public static final String KEY_FIRSTNAME = "first_name";
@@ -43,6 +45,7 @@ public class SignupActivity extends AppCompatActivity {
     JSONParser jsonParser = new JSONParser();
     private static final String TAG_SUCCESS = "success";
     String first_name,last_name,email,password;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,41 @@ public class SignupActivity extends AppCompatActivity {
         lastnameEdt = (EditText) findViewById(R.id.lastname);
         emailEdt = (EditText) findViewById(R.id.emailEdt);
         passwordEdt = (EditText) findViewById(R.id.password);
+
+        firstnameEdt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+        lastnameEdt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+        emailEdt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+        passwordEdt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
 
         submitBtn = (Button)findViewById(R.id.submitBtn);
 
@@ -77,6 +115,7 @@ public class SignupActivity extends AppCompatActivity {
                                 Toast.makeText(SignupActivity.this,"Registered successfully..",Toast.LENGTH_LONG).show();
                                 Intent intent = new Intent(SignupActivity.this, SigninActivity.class);
                                 startActivity(intent);
+                                progressDialog.dismiss();
                                 finish();
                             }
                         },
@@ -100,10 +139,18 @@ public class SignupActivity extends AppCompatActivity {
                 };
 
                 queue.add(stringRequest);
-
+                progressDialog = new ProgressDialog(SignupActivity.this);
+                progressDialog.setMessage("Registring Please wait....");
+                progressDialog.show();
 
             }
         });
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
     }
 
     /*

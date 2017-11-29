@@ -1,5 +1,6 @@
 package wealthmanagement.com.wealthmanagement;
 
+import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -38,13 +39,14 @@ public class ModewiseActivity extends AppCompatActivity {
     private Button incomeButton,expenseButton;
     boolean isIncomeSelected;
     boolean isExpenseSelected;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_datewisesearch);
 
-
+        ModewiseActivity.this.setTitle("iAccounts");
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         incomeButton = (Button) findViewById(R.id.incomeButton);
         expenseButton = (Button) findViewById(R.id.expenseButton);
@@ -92,7 +94,7 @@ public class ModewiseActivity extends AppCompatActivity {
 
 
     private void prepareDataforincome() {
-        stringRequest = new StringRequest("http://192.168.0.115/wealthmanagement/getransactionbyid.php?user_id="+6,
+        stringRequest = new StringRequest("http://ingtechbd.com/demo/wealthmanagement/getransactionbyid.php?user_id="+6,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -111,6 +113,7 @@ public class ModewiseActivity extends AppCompatActivity {
 
                                     transactionList.add(new Transaction(category,date,price,description,payment_method));
                                     mAdapter.notifyDataSetChanged();
+                                    progressDialog.dismiss();
                                     //Toast.makeText(AllTransactionsActivity.this, "category"+category, Toast.LENGTH_SHORT).show();
 
                                 } catch (JSONException e) {
@@ -134,10 +137,13 @@ public class ModewiseActivity extends AppCompatActivity {
 
         RequestQueue requestQueue = Volley.newRequestQueue(ModewiseActivity.this);
         requestQueue.add(stringRequest);
+        progressDialog = new ProgressDialog(ModewiseActivity.this);
+        progressDialog.setMessage("Please wait....");
+        progressDialog.show();
     }
 
     private void prepareDataforexpense() {
-        stringRequest = new StringRequest("http://192.168.0.115/wealthmanagement/getransactionbyidexpense.php?user_id="+6,
+        stringRequest = new StringRequest("http://ingtechbd.com/demo/wealthmanagement/getransactionbyidexpense.php?user_id="+6,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -156,6 +162,7 @@ public class ModewiseActivity extends AppCompatActivity {
 
                                     transactionList.add(new Transaction(category,date,price,description,payment_method));
                                     mAdapter.notifyDataSetChanged();
+                                    progressDialog.dismiss();
                                     //Toast.makeText(AllTransactionsActivity.this, "category"+category, Toast.LENGTH_SHORT).show();
 
                                 } catch (JSONException e) {
@@ -179,5 +186,8 @@ public class ModewiseActivity extends AppCompatActivity {
 
         RequestQueue requestQueue = Volley.newRequestQueue(ModewiseActivity.this);
         requestQueue.add(stringRequest);
+        progressDialog = new ProgressDialog(ModewiseActivity.this);
+        progressDialog.setMessage("Please wait....");
+        progressDialog.show();
     }
 }

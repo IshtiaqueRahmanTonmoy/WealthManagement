@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        MainActivity.this.setTitle("iAccounts");
         Intent intent = getIntent();
         email = intent.getStringExtra("email");
 
